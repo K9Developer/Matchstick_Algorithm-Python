@@ -1,8 +1,6 @@
 import json
-from py_expression.core import Exp
 from typing import Union
-
-exp = Exp()
+from PIL import Image, ImageDraw, ImageFont
 
 explanation_map = {
     "00": "top left",
@@ -15,6 +13,78 @@ explanation_map = {
 }
 
 number_format = list[list[int, int, int], list[int, int, int, int]]
+
+im_data = {
+    "1": "./1.png",
+    "2": "./2.png",
+    "3": "./3.png",
+    "4": "./4.png",
+    "5": "./5.png",
+    "6": "./6.png",
+    "7": "./7.png",
+    "8": "./8.png",
+    "9": "./9.png",
+    "0": "./0.png",
+    "+": "./+.png",
+    "-": "./-.png",
+    "*": "./x.png",
+    "=": "./=.png",
+    "/": "./divide.png"
+}
+
+
+def create_eq_img(eq: str, title: str = "Fix by moving one matchstick", subtitle: str = "", size_factor: float = 1.0):
+    eq = eq.replace(" ", "")
+
+    width = len(eq)*(90+10)-10
+    height = 165
+
+    equation = Image.new('RGBA', (width, height), color=(0, 0, 0, 0))
+
+    x = 0
+    for char in eq:
+        stick_num = Image.open(im_data[char])
+
+        equation.paste(
+            stick_num, (x, height-int((height/2)+(stick_num.size[1]/2))))
+        x += 90+10
+
+    font = ImageFont.truetype("Rubik.ttf", 40)
+    font_sub = ImageFont.truetype("Rubik.ttf", 16)
+
+    d1 = ImageDraw.Draw(equation)
+
+    image = Image.new('RGBA', (max(width, d1.textsize(
+        title, font=font)[0], d1.textsize(
+        subtitle, font=font_sub)[0]), height+120), color=(0, 0, 0, 0))
+
+    draw = ImageDraw.Draw(image)
+
+    image.paste(equation, (int((max(width, d1.textsize(
+        title, font=font)[0], d1.textsize(
+        subtitle, font=font_sub)[0])-equation.size[0])/2), height+60 -
+        equation.size[1]))
+
+    t_w, t_h = draw.textsize(title, font=font)
+    draw.text(((max(width, d1.textsize(
+        title, font=font)[0], d1.textsize(
+        subtitle, font=font_sub)[0])-t_w)/2, 0), title,
+        (0, 0, 0), font=font)
+
+    if size_factor != 1:
+        image = image.resize((
+            int(image.size[0]/(1/size_factor)), int(image.size[1]/(1/size_factor))), resample=Image.Resampling.NEAREST)
+
+    if subtitle:
+        t_w2, t_h2 = draw.textsize(subtitle, font=font_sub)
+        draw.text(((max(width, d1.textsize(
+            title, font=font)[0], d1.textsize(
+            subtitle, font=font_sub)[0])-t_w2)/2, height+120-10-d1.textsize(
+            subtitle, font=font_sub)[1]), subtitle,
+            (0, 0, 0), font=font_sub)
+
+    return image
+
 
 with open('stickData.json') as f:
     number_data = json.load(f)
@@ -94,10 +164,8 @@ def evaluate_eq(eq: str) -> bool:
     problem = eq.split("=")[0]
 
     # Solves the two equations
-    parsed_problem = exp.parse(problem)
-    problem_sum = exp.eval(parsed_problem)
-    parsed_result = exp.parse(result)
-    result_sum = exp.eval(parsed_result)
+    problem_sum = eval(problem, {'__builtins__': None})
+    result_sum = eval(result, {'__builtins__': None})
 
     return problem_sum == result_sum
 
@@ -148,8 +216,8 @@ def explanation_generator(num1: number_format, num1_to: number_format, num2: num
     operation = "removed" if get_match_sticks_count(
         num1) < get_match_sticks_count(num2) else "got"
 
-    if operation == "removed":
-        return f"removed a matchstick from {f'the {get_diff(num2, num2_to)} of ' if get_diff(num2, num2_to) else ''}\"{decode_num(num2)}\" (to make a \"{decode_num(num2_to)}\") and put it into the {get_diff(num1_to, num1)} of \"{decode_num(num1)}\" (to make a \"{decode_num(num1_to)}\")."
+    return f"removed a matchstick from {f'the {get_diff(num1, num1_to)} of ' if get_diff(num1, num1_to) else ''}{decode_num(num1)} (to make a {decode_num(num1_to)}) and put it into {f'the {get_diff(num2_to, num2)} of ' if get_diff(num2_to, num2) else ''}{decode_num(num2)} (to make a {decode_num(num2_to)})."
 
-    else:
-        return f"added a matchstick to {f'the {get_diff(num2, num2_to)} of ' if get_diff(num2, num2_to) else ''}\"{decode_num(num2_to)}\" (to make a \"{decode_num(num2)}\") from the {get_diff(num1_to, num1)} of \"{decode_num(num1_to)}\" (to make a \"{decode_num(num1)}\")."
+
+def create_image(eq):
+    pass

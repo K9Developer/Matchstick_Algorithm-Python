@@ -58,7 +58,7 @@ def solve(equation: str) -> dict[list, list]:
     equation_matchstick_count = _get_equation_matchstick_count(equation)
 
     if utils.evaluate_eq(equation):
-        return {"solutions": [{"new_equation": equation, "original_equation": equation, "explanation": ["Expression was already true"]}], "mutations": []}
+        return {"solutions": [{"new_equation": equation, "original_equation": equation, "explanation": "Expression was already true"}], "mutations": []}
 
     result_map = {"solutions": [], "mutations": []}
     transform_data = None
@@ -130,7 +130,7 @@ def solve(equation: str) -> dict[list, list]:
                     # If the option is "from" which means the number after a stick was added
                     # then it will check what number can remove a stick and create a valid equation
                     elif opt == "from":
-
+                        continue
                         # Now look through all numbers in equation to check if can add stick to them
                         for index2, num2 in enumerate(equation):
 
