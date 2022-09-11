@@ -39,7 +39,7 @@ def create_eq_img(eq: str, title: str = "Fix by moving one matchstick", subtitle
     width = len(eq)*(90+10)-10
     height = 165
 
-    equation = Image.new('RGBA', (width, height), color=(0, 0, 0, 0))
+    equation = Image.new('RGBA', (width, height), color=(255, 255, 255, 255))
 
     x = 0
     for char in eq:
@@ -217,7 +217,3 @@ def explanation_generator(num1: number_format, num1_to: number_format, num2: num
         num1) < get_match_sticks_count(num2) else "got"
 
     return f"removed a matchstick from {f'the {get_diff(num1, num1_to)} of ' if get_diff(num1, num1_to) else ''}{decode_num(num1)} (to make a {decode_num(num1_to)}) and put it into {f'the {get_diff(num2_to, num2)} of ' if get_diff(num2_to, num2) else ''}{decode_num(num2)} (to make a {decode_num(num2_to)})."
-
-
-def create_image(eq):
-    pass
