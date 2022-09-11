@@ -203,13 +203,17 @@ def solve(equation: str) -> dict[list, list]:
     return result_map
 
 
-def create_equation(answer: int = None) -> dict[str, list]:
+def create_equation(answer: int = None, min_num: int = 1, max_num: int = 10, divide: bool = False, multiply: bool = False) -> dict[str, list]:
     """
     Creates a random valid equation by choosing random numbers and with them
     creating the equation
 
     Args:
         answer (int, optional): Set's the answer so the original's result would be the answer, example: (answer=4) 6+4=4. Defaults to None.
+        min_num (int, optional): The minimum number that can show up in the equation. Defaults to 1.
+        max_num (int, optional): The maximum number that can show up in the equation. Defaults to 10.
+        divide (int, optional): Wether the function should generate an equation with the / sign. Defaults to False.
+        multiply (int, optional): Wether the function should generate an equation with the * sign. Defaults to False.
 
     Returns:
         dict[str, list]: The random equation with it's answers
@@ -219,12 +223,15 @@ def create_equation(answer: int = None) -> dict[str, list]:
     while True:
 
         # Create the random equation
-        random_num1 = random.randint(1, 9)
-        random_num2 = random.randint(1, 9)
-        random_num3 = random.randint(1, 9)
-        plus = random.choice([True, False])
-        eq = f"{random_num1}{'+' if plus else '-'}{random_num2}={answer or random_num3}"
-
-        result = solve(eq)
+        random_num1 = random.randint(min_num, max_num)
+        random_num2 = random.randint(min_num, max_num)
+        random_num3 = random.randint(min_num, max_num)
+        operation = random.choice(
+            "+-" + '/' if divide else '' + '*' if multiply else '')
+        eq = f"{random_num1}{operation}{random_num2}={answer or random_num3}"
+        try:
+            result = solve(eq)
+        except Exception:
+            continue
         if len(result["solutions"]) and not utils.evaluate_eq(eq):
             return {"equation": eq, "solutions": result["solutions"]}
