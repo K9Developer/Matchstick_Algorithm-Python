@@ -227,7 +227,7 @@ def create_equation(answer: int = None, min_num: int = 1, max_num: int = 10, div
         random_num2 = random.randint(min_num, max_num)
         random_num3 = random.randint(min_num, max_num)
         operation = random.choice(
-            "+-" + '/' if divide else '' + '*' if multiply else '')
+            "+-" + ('/' if divide else '') + ('*' if multiply else ''))
         eq = f"{random_num1}{operation}{random_num2}={answer or random_num3}"
         try:
             result = solve(eq)
