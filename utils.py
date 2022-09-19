@@ -1,6 +1,7 @@
 import json
 from typing import Union
 from PIL import Image, ImageDraw, ImageFont
+import re
 
 explanation_map = {
     "00": "top left",
@@ -158,14 +159,22 @@ def evaluate_eq(eq: str) -> bool:
     """
 
     # Splits the result and problem
+
     eq = eq.replace("x", "*")
     eq = eq.replace("X", "*")
+
+    if not re.match("^\d[0-999+-=/\*]*[-=+/\*]\d*", eq):
+        return
+
     result = eq.split("=")[-1]
     problem = eq.split("=")[0]
 
     # Solves the two equations
-    problem_sum = eval(problem, {'__builtins__': None})
-    result_sum = eval(result, {'__builtins__': None})
+    try:
+        problem_sum = eval(problem, {'__builtins__': None})
+        result_sum = eval(result, {'__builtins__': None})
+    except Exception:
+        return
 
     return problem_sum == result_sum
 
