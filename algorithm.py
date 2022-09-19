@@ -1,4 +1,5 @@
 import contextlib
+import itertools
 import json
 import utils
 import random
@@ -235,3 +236,62 @@ def create_equation(answer: int = None, min_num: int = 1, max_num: int = 10, div
             continue
         if len(result["solutions"]) and not utils.evaluate_eq(eq):
             return {"equation": eq, "solutions": result["solutions"]}
+
+
+def get_problems(eq: str) -> list:
+    """
+    Gets all valid matchstick problems that eq (desired answer) is in their solutions list.
+    It does that by implementing the solve algorithm but backwards
+    So it will allow all not true equations
+
+    Returns:
+        list: A list of all found equations that `eq` is a part of their solutions list
+    """
+
+    equations = []
+
+    with open("./matchstick_transform_data.json") as f:
+        transform_data = json.load(f)
+
+    for index, char in enumerate(eq):
+        if transform_data.get(char):
+
+            # Loop over all numbers that can become from removing/adding/morphing a matchstick from `char`
+            # then loop over all chars in eq that can become a number when a matchstick
+            # is removed/added/morphed to them and then it checks if the equation is a valid one and is not true
+            # (because these equations cant be equal)
+
+            for give_to_num, (index2, char2) in itertools.product(transform_data[char]["to"], enumerate(eq)):
+                if transform_data.get(char2):
+                    for get_from_num in transform_data[char2]["from"]:
+                        tmp_eq = list(eq)
+                        tmp_eq[index] = give_to_num
+                        tmp_eq[index2] = get_from_num
+
+                        eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                        if not eval_result and eval_result != None:
+                            solve_data = solve(''.join(tmp_eq))
+                            equations.append(solve_data)
+
+        if transform_data.get(char):
+            for get_from_num, (index2, char2) in itertools.product(transform_data[char]["from"], enumerate(eq)):
+                if transform_data.get(char2):
+                    for give_to_num in transform_data[char2]["to"]:
+                        tmp_eq = list(eq)
+                        tmp_eq[index] = give_to_num
+                        tmp_eq[index2] = get_from_num
+                        eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                        if not eval_result and eval_result != None:
+                            solve_data = solve(''.join(tmp_eq))
+                equations.append(solve_data)
+
+        if transform_data.get(char):
+            for morph_num in transform_data[char]["morph"]:
+                tmp_eq = list(eq)
+                tmp_eq[index] = morph_num
+                eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                if not eval_result and eval_result != None:
+                    solve_data = solve(''.join(tmp_eq))
+                    equations.append(solve_data)
+
+    return equations
