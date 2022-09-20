@@ -249,6 +249,7 @@ def get_problems(eq: str) -> list:
     """
 
     equations = []
+    eq_strings = []
 
     with open("./matchstick_transform_data.json") as f:
         transform_data = json.load(f)
@@ -270,8 +271,18 @@ def get_problems(eq: str) -> list:
 
                         eval_result = utils.evaluate_eq(''.join(tmp_eq))
                         if not eval_result and eval_result != None:
-                            solve_data = solve(''.join(tmp_eq))
-                            equations.append(solve_data)
+                            if ''.join(tmp_eq) not in eq_strings:
+                                solve_data = solve(''.join(tmp_eq))
+                                in_solutions = False
+                            for solution in solve_data["solutions"]:
+                                if solution["new_equation"] == eq:
+                                    in_solutions = True
+                                    break
+
+                            if in_solutions:
+                                eq_strings.append(''.join(tmp_eq))
+                                equations.append(
+                                    {"eq": ''.join(tmp_eq), "data": solve_data})
 
         if transform_data.get(char):
             for get_from_num, (index2, char2) in itertools.product(transform_data[char]["from"], enumerate(eq)):
@@ -282,8 +293,19 @@ def get_problems(eq: str) -> list:
                         tmp_eq[index2] = get_from_num
                         eval_result = utils.evaluate_eq(''.join(tmp_eq))
                         if not eval_result and eval_result != None:
-                            solve_data = solve(''.join(tmp_eq))
-                equations.append(solve_data)
+                            if ''.join(tmp_eq) not in eq_strings:
+                                solve_data = solve(''.join(tmp_eq))
+                                in_solutions = False
+
+                            for solution in solve_data["solutions"]:
+                                if solution["new_equation"] == eq:
+                                    in_solutions = True
+                                    break
+
+                            if in_solutions:
+                                eq_strings.append(''.join(tmp_eq))
+                                equations.append(
+                                    {"eq": ''.join(tmp_eq), "data": solve_data})
 
         if transform_data.get(char):
             for morph_num in transform_data[char]["morph"]:
@@ -291,7 +313,16 @@ def get_problems(eq: str) -> list:
                 tmp_eq[index] = morph_num
                 eval_result = utils.evaluate_eq(''.join(tmp_eq))
                 if not eval_result and eval_result != None:
-                    solve_data = solve(''.join(tmp_eq))
-                    equations.append(solve_data)
+                    if ''.join(tmp_eq) not in eq_strings:
+                        solve_data = solve(''.join(tmp_eq))
+                        in_solutions = False
+                        for solution in solve_data["solutions"]:
+                            if solution["new_equation"] == eq:
+                                in_solutions = True
+                                break
 
+                        if in_solutions:
+                            eq_strings.append(''.join(tmp_eq))
+                            equations.append(
+                                {"eq": ''.join(tmp_eq), "data": solve_data})
     return equations

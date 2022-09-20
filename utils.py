@@ -163,7 +163,7 @@ def evaluate_eq(eq: str) -> bool:
     eq = eq.replace("x", "*")
     eq = eq.replace("X", "*")
 
-    if not re.match("^\d[0-999+-=/\*]*[-=+/\*]\d*", eq):
+    if not re.match("-?[0-9]+([-+=\/*][0-9]+)+", eq):
         return
 
     result = eq.split("=")[-1]
