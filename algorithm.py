@@ -38,8 +38,7 @@ def _get_equation_matchstick_count(equation: str) -> int:
     # amount of matchsticks that every char is built with
     for char in equation:
         with contextlib.suppress(Exception):
-            equation_matchstick_count += utils.get_match_sticks_count(
-                utils.encode_num(char))
+            equation_matchstick_count += utils.get_match_sticks_count(utils.encode_num(char))
 
     return equation_matchstick_count
 
@@ -105,28 +104,32 @@ def solve(equation: str) -> dict[list, list]:
                                     new_eq = list(equation)
                                     new_eq[index2] = from_num
                                     new_eq[index] = num_opt
-                                    new_eq = ''.join(new_eq)
+                                    new_eq = "".join(new_eq)
                                     solve = utils.create_eq(new_eq)
 
                                     # There are multiple checks that need to be verified:
                                     #    1. Check if the equation is true - it means that 1+1=4 wont go through
                                     #    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                                     #    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                                    if solve[0] and \
-                                        not _solution_exists(result_map, solve[1]) and \
-                                            _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
+                                    if solve[0] and not _solution_exists(result_map, solve[1]) and _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
 
-                                        result_map["solutions"].append({
-                                            "new_equation": solve[1],
-                                            "original_equation": equation,
-                                            "explanation": utils.explanation_generator(utils.encode_num(num), utils.encode_num(num_opt), utils.encode_num(num2), utils.encode_num(from_num))
-                                        })
+                                        result_map["solutions"].append(
+                                            {
+                                                "new_equation": solve[1],
+                                                "original_equation": equation,
+                                                "explanation": utils.explanation_generator(
+                                                    utils.encode_num(num), utils.encode_num(num_opt), utils.encode_num(num2), utils.encode_num(from_num), new_eq, equation
+                                                ),
+                                            }
+                                        )
 
                                     else:
-                                        mutations.append({
-                                            "new_equation": solve[1],
-                                            "original_equation": equation,
-                                        })
+                                        mutations.append(
+                                            {
+                                                "new_equation": solve[1],
+                                                "original_equation": equation,
+                                            }
+                                        )
 
                     # If the option is "from" which means the number after a stick was added
                     # then it will check what number can remove a stick and create a valid equation
@@ -146,28 +149,32 @@ def solve(equation: str) -> dict[list, list]:
                                     new_eq = list(equation)
                                     new_eq[index2] = from_num
                                     new_eq[index] = num_opt
-                                    new_eq = ''.join(new_eq)
+                                    new_eq = "".join(new_eq)
                                     solve = utils.create_eq(new_eq)
 
                                     # There are multiple checks that need to be verified:
                                     #    1. Check if the equation is true - it means that 1+1=4 wont go through
                                     #    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                                     #    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                                    if solve[0] and \
-                                        not _solution_exists(result_map, solve[1]) and \
-                                            _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
+                                    if solve[0] and not _solution_exists(result_map, solve[1]) and _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
 
-                                        result_map["solutions"].append({
-                                            "new_equation": solve[1],
-                                            "original_equation": equation,
-                                            "explanation": utils.explanation_generator(utils.encode_num(num), utils.encode_num(num_opt), utils.encode_num(num2), utils.encode_num(from_num))
-                                        })
+                                        result_map["solutions"].append(
+                                            {
+                                                "new_equation": solve[1],
+                                                "original_equation": equation,
+                                                "explanation": utils.explanation_generator(
+                                                    utils.encode_num(num), utils.encode_num(num_opt), utils.encode_num(num2), utils.encode_num(from_num), new_eq, equation
+                                                ),
+                                            }
+                                        )
 
                                     else:
-                                        mutations.append({
-                                            "new_equation": solve[1],
-                                            "original_equation": equation,
-                                        })
+                                        mutations.append(
+                                            {
+                                                "new_equation": solve[1],
+                                                "original_equation": equation,
+                                            }
+                                        )
 
                     # If the option is "morph" which means the number after moving a stick within it self,
                     # For example 6 to 0
@@ -177,28 +184,25 @@ def solve(equation: str) -> dict[list, list]:
                         new_eq = list(equation)
                         original = new_eq[index]
                         new_eq[index] = num_opt
-                        new_eq = ''.join(new_eq)
+                        new_eq = "".join(new_eq)
                         solve = utils.create_eq(new_eq)
 
                         # There are multiple checks that need to be verified:
                         #    1. Check if the equation is true - it means that 1+1=4 wont go through
                         #    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                         #    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                        if solve[0] and \
-                            not _solution_exists(result_map, solve[1]) and \
-                                _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
+                        if solve[0] and not _solution_exists(result_map, solve[1]) and _get_equation_matchstick_count(new_eq) == equation_matchstick_count:
 
-                            result_map["solutions"].append({
-                                "new_equation": solve[1],
-                                "original_equation": equation,
-                                "explanation": utils.explanation_generator(utils.encode_num(list(equation)[index]), None, utils.encode_num(num_opt), None, morph=True)
-                            })
+                            result_map["solutions"].append(
+                                {
+                                    "new_equation": solve[1],
+                                    "original_equation": equation,
+                                    "explanation": utils.explanation_generator(utils.encode_num(list(equation)[index]), None, utils.encode_num(num_opt), None, new_eq, equation, morph=True),
+                                }
+                            )
 
                         else:
-                            mutations.append({
-                                "new_equation": solve[1],
-                                "original_equation": equation
-                            })
+                            mutations.append({"new_equation": solve[1], "original_equation": equation})
 
     result_map["mutations"] = mutations
     return result_map
@@ -227,8 +231,7 @@ def create_equation(answer: int = None, min_num: int = 1, max_num: int = 10, div
         random_num1 = random.randint(min_num, max_num)
         random_num2 = random.randint(min_num, max_num)
         random_num3 = random.randint(min_num, max_num)
-        operation = random.choice(
-            "+-" + ('/' if divide else '') + ('*' if multiply else ''))
+        operation = random.choice("+-" + ("/" if divide else "") + ("*" if multiply else ""))
         eq = f"{random_num1}{operation}{random_num2}={answer or random_num3}"
         try:
             result = solve(eq)
@@ -269,10 +272,10 @@ def get_problems(eq: str) -> list:
                         tmp_eq[index] = give_to_num
                         tmp_eq[index2] = get_from_num
 
-                        eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                        eval_result = utils.evaluate_eq("".join(tmp_eq))
                         if not eval_result and eval_result != None:
-                            if ''.join(tmp_eq) not in eq_strings:
-                                solve_data = solve(''.join(tmp_eq))
+                            if "".join(tmp_eq) not in eq_strings:
+                                solve_data = solve("".join(tmp_eq))
                                 in_solutions = False
                             for solution in solve_data["solutions"]:
                                 if solution["new_equation"] == eq:
@@ -280,9 +283,8 @@ def get_problems(eq: str) -> list:
                                     break
 
                             if in_solutions:
-                                eq_strings.append(''.join(tmp_eq))
-                                equations.append(
-                                    {"eq": ''.join(tmp_eq), "data": solve_data})
+                                eq_strings.append("".join(tmp_eq))
+                                equations.append({"eq": "".join(tmp_eq), "data": solve_data})
 
         if transform_data.get(char):
             for get_from_num, (index2, char2) in itertools.product(transform_data[char]["from"], enumerate(eq)):
@@ -291,10 +293,10 @@ def get_problems(eq: str) -> list:
                         tmp_eq = list(eq)
                         tmp_eq[index] = give_to_num
                         tmp_eq[index2] = get_from_num
-                        eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                        eval_result = utils.evaluate_eq("".join(tmp_eq))
                         if not eval_result and eval_result != None:
-                            if ''.join(tmp_eq) not in eq_strings:
-                                solve_data = solve(''.join(tmp_eq))
+                            if "".join(tmp_eq) not in eq_strings:
+                                solve_data = solve("".join(tmp_eq))
                                 in_solutions = False
 
                             for solution in solve_data["solutions"]:
@@ -303,18 +305,17 @@ def get_problems(eq: str) -> list:
                                     break
 
                             if in_solutions:
-                                eq_strings.append(''.join(tmp_eq))
-                                equations.append(
-                                    {"eq": ''.join(tmp_eq), "data": solve_data})
+                                eq_strings.append("".join(tmp_eq))
+                                equations.append({"eq": "".join(tmp_eq), "data": solve_data})
 
         if transform_data.get(char):
             for morph_num in transform_data[char]["morph"]:
                 tmp_eq = list(eq)
                 tmp_eq[index] = morph_num
-                eval_result = utils.evaluate_eq(''.join(tmp_eq))
+                eval_result = utils.evaluate_eq("".join(tmp_eq))
                 if not eval_result and eval_result != None:
-                    if ''.join(tmp_eq) not in eq_strings:
-                        solve_data = solve(''.join(tmp_eq))
+                    if "".join(tmp_eq) not in eq_strings:
+                        solve_data = solve("".join(tmp_eq))
                         in_solutions = False
                         for solution in solve_data["solutions"]:
                             if solution["new_equation"] == eq:
@@ -322,7 +323,6 @@ def get_problems(eq: str) -> list:
                                 break
 
                         if in_solutions:
-                            eq_strings.append(''.join(tmp_eq))
-                            equations.append(
-                                {"eq": ''.join(tmp_eq), "data": solve_data})
+                            eq_strings.append("".join(tmp_eq))
+                            equations.append({"eq": "".join(tmp_eq), "data": solve_data})
     return equations
